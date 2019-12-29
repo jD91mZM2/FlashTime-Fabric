@@ -6,7 +6,8 @@
   ],
   "client": [
     "MinecraftServerMixin",
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

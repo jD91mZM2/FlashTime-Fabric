@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer
 
 object FlashTimeState {
     var ticksPerSecond = 2;
+    var lastTickDelta = 0.0;
 }
 
 class FlashTime: ModInitializer {

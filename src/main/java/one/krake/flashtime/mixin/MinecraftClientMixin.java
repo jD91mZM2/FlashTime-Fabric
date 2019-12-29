@@ -28,7 +28,9 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Difficulty;
+import one.krake.flashtime.FlashTimeState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -55,6 +57,8 @@ public abstract class MinecraftClientMixin {
     public HitResult crosshairTarget;
     @Shadow
     public ClientPlayerInteractionManager interactionManager;
+    @Shadow
+    private float pausedTickDelta;
     @Shadow
     public Screen currentScreen;
     @Shadow
@@ -89,10 +93,12 @@ public abstract class MinecraftClientMixin {
     @Shadow
     public Keyboard keyboard;
 
+    // You can find all type names at https://asm.ow2.io/asm4-guide.pdf, under "Type descriptors". You're welcome.
     @Inject(method = "render", at = @At("RETURN"))
-    private void onRender(boolean tick, CallbackInfo _info) {
+    protected void tickPlayerOnRender(boolean tick, CallbackInfo _info) {
+        this.playerTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
+        FlashTimeState.INSTANCE.setLastTickDelta(this.playerTickCounter.tickDelta);
         if (tick) {
-            this.playerTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
             IntStream.range(0, Math.min(10, this.playerTickCounter.ticksThisFrame))
                     .forEach(i -> {
                         this.playerTick();
@@ -170,6 +176,7 @@ public abstract class MinecraftClientMixin {
         }
     }
 
+    @Overwrite
     public void tick() {
         if (this.world != null) {
             this.getProfiler().swap("levelRenderer");
