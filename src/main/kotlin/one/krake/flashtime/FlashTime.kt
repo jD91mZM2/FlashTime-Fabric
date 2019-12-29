@@ -3,7 +3,7 @@ package one.krake.flashtime
 import net.fabricmc.api.ModInitializer
 
 object FlashTimeState {
-    var tickDelayMillis = 1000 / 2;
+    var ticksPerSecond = 2;
 }
 
 class FlashTime: ModInitializer {
