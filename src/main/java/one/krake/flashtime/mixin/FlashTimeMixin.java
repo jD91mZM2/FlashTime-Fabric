@@ -1,4 +1,4 @@
-package net.fabricmc.example.mixin;
+package one.krake.flashtime.mixin;
 
 import net.minecraft.client.gui.screen.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
 // Mixins HAVE to be written in java due to constraints in the mixin system.
-public class ExampleMixin {
+public class FlashTimeMixin {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
         System.out.println("This line is printed by an example mod mixin!");

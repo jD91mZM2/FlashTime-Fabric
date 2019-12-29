@@ -1,11 +1,11 @@
 {
   "required": true,
-  "package": "net.fabricmc.example.mixin",
+  "package": "one.krake.flashtime.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
   ],
   "client": [
-    "ExampleMixin"
+    "FlashTimeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

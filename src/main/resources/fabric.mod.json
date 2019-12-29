@@ -1,29 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "flashtime",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "FlashTime",
+  "description": "A mod that makes everything slow... except the player",
   "authors": [
-    "Me!"
+    "jD91mZM2"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://jd91mzm2.github.io/",
+    "sources": "https://github.com/jD91mZM2/FlashTime-Fabric"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleModKt::init"
+      "one.krake.flashtime.FlashTime"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "flashtime.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.7.1",
