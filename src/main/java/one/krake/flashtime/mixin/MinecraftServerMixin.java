@@ -8,6 +8,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
+import one.krake.flashtime.FlashTimeState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +26,7 @@ import java.util.function.BooleanSupplier;
 // Priority is marked as being most important ever. I mean, this function is the main star of the show,
 // if it can't override this function then there's no reason to use the FlashTime mod at all.
 @Mixin(value = MinecraftServer.class, priority = 0)
-public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<ServerTask> {
+public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<ServerTask> {
     @Shadow
     private long timeReference;
     @Shadow
@@ -33,9 +34,9 @@ public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<Serve
     @Shadow
     private boolean profilerStartQueued;
     @Shadow
-    private final ServerMetadata metadata = new ServerMetadata();
+    private ServerMetadata metadata;
     @Shadow
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Logger LOGGER;
     @Shadow
     private volatile boolean loading;
 
@@ -56,14 +57,12 @@ public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<Serve
     @Shadow
     protected void exit() {}
 
-    private static final long TICK_DELAY_MILLIS = 500L;
-
     private long previousTimeReference;
     private boolean keepTicking;
     private long timeUntilNextTick;
 
     // Java complains if I extend without a constructor
-    private FlashTimeServerMixin() {
+    private MinecraftServerMixin() {
         super(null);
     }
 
@@ -77,6 +76,10 @@ public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<Serve
     The reason this is an override instead of a nice callback injection is that there are just a lot of references
     to the hardcoded value 50L. In the future I should definitely look into using callback injections, although I'm not
     entirely sure those can even achieve what I want :(
+
+    TODO: Potentially useful injectors:
+    - https://github.com/SpongePowered/Mixin/wiki/Injection-Point-Reference#beforeconstant
+    -  http://jenkins.liteloader.com/view/Other/job/Mixin/javadoc/index.html?org/spongepowered/asm/mixin/injection/ModifyConstant.html
      */
     public void run() {
         try {
@@ -92,16 +95,16 @@ public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<Serve
                     long l = Util.getMeasuringTimeMs() - this.timeReference;
                     // MIXIN: Replaced obfuscated `field_4557` with copy: previousTimeReference
                     if (l > 2000L && this.timeReference - this.previousTimeReference >= 15000L) {
-                        // MIXIN: 50L -> TICK_DELAY_MILLIS
-                        long m = l / TICK_DELAY_MILLIS;
+                        // MIXIN: 50L -> FlashTimeState.INSTANCE.getTickDelayMillis()
+                        long m = l / FlashTimeState.INSTANCE.getTickDelayMillis();
                         LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
-                        // MIXIN: 50L -> TICK_DELAY_MILLIS
-                        this.timeReference += m * TICK_DELAY_MILLIS;
+                        // MIXIN: 50L -> FlashTimeState.INSTANCE.getTickDelayMillis()
+                        this.timeReference += m * FlashTimeState.INSTANCE.getTickDelayMillis();
                         this.previousTimeReference = this.timeReference;
                     }
 
-                    // MIXIN: 50L -> TICK_DELAY_MILLIS
-                    this.timeReference += TICK_DELAY_MILLIS;
+                    // MIXIN: 50L -> FlashTimeState.INSTANCE.getTickDelayMillis()
+                    this.timeReference += FlashTimeState.INSTANCE.getTickDelayMillis();
                     if (this.profilerStartQueued) {
                         this.profilerStartQueued = false;
                         // MIXIN: Replaced `this.profiler` with `this.getProfiler`
@@ -114,8 +117,8 @@ public abstract class FlashTimeServerMixin extends ReentrantThreadExecutor<Serve
                     this.getProfiler().swap("nextTickWait");
                     // MIXIN: More obfuscated fields replaced
                     this.keepTicking = true;
-                    // MIXIN: 50L -> TICK_DELAY_MILLIS
-                    this.timeUntilNextTick = Math.max(Util.getMeasuringTimeMs() + TICK_DELAY_MILLIS, this.timeReference);
+                    // MIXIN: 50L -> FlashTimeState.INSTANCE.getTickDelayMillis()
+                    this.timeUntilNextTick = Math.max(Util.getMeasuringTimeMs() + FlashTimeState.INSTANCE.getTickDelayMillis(), this.timeReference);
                     // MIXIN: Copied function with obfuscated name
                     this.weirdVersionOfRunTasks();
                     //
