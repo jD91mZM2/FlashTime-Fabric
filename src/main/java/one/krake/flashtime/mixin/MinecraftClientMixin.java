@@ -101,7 +101,9 @@ public abstract class MinecraftClientMixin {
         if (tick) {
             IntStream.range(0, Math.min(10, this.playerTickCounter.ticksThisFrame))
                     .forEach(i -> {
+                        FlashTimeState.INSTANCE.setUnlockPlayerTick(true);
                         this.playerTick();
+                        FlashTimeState.INSTANCE.setUnlockPlayerTick(false);
                     });
         }
     }

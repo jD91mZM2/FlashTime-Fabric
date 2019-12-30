@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer
 object FlashTimeState {
     var ticksPerSecond = 2;
     var lastTickDelta = 0.0;
+    var unlockPlayerTick = false;
 }
 
 class FlashTime: ModInitializer {
