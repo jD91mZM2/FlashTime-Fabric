@@ -8,6 +8,6 @@ This is my first open source minecraft mod! When I was starting out, I
 didn't see the value in open source. Then I didn't make mods in
 forever, until I made the original FlashTime that sadly couldn't be
 open-sourced because it was modifications done directly on Minecraft's
-source code. This can be open source because it only describes how it
-modifies Minecraft, and does not include any source code from
-Minecraft itself :D
+source code. This can be open source because it uses the Fabric mod
+loader that mostly manages to avoid touching the Minecraft source
+code.
