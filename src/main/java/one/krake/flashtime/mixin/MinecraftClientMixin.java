@@ -195,6 +195,8 @@ public abstract class MinecraftClientMixin {
         }
     }
 
+    // This is an overwrite mainly because the function doesn't need to be modified so much as it needs to be split in two.
+    // There also needs to be *some* special care to make sure everything is in the right half of the function.
     @Overwrite
     public void tick() {
         if (this.world != null) {

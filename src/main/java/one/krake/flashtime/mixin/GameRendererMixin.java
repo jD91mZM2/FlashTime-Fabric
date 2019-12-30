@@ -17,7 +17,31 @@ public abstract class GameRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V"),
             index = 4
     )
-    protected float onCameraUpdateTickDelta(float _prevTickDelta) {
+    // Smooth player movement
+    protected float changeCameraUpdateTickDelta(float _prevTickDelta) {
+        return (float) FlashTimeState.INSTANCE.getLastTickDelta();
+    }
+
+    @ModifyArg(
+            method = "renderWorld",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;bobView(Lnet/minecraft/client/util/math/MatrixStack;F)V"),
+            index = 1
+    )
+    // Smooth view bobbing
+    protected float changeBobViewTickDelta(float _prevTickDelta) {
+        return (float) FlashTimeState.INSTANCE.getLastTickDelta();
+    }
+
+    @ModifyArg(
+            method = "renderWorld",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/GameRenderer;renderHand(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Camera;F)V"
+            ),
+            index = 2
+    )
+    // Smooth hand rendering
+    protected float changeHandTickDelta(float _prevTickDelta) {
         return (float) FlashTimeState.INSTANCE.getLastTickDelta();
     }
 }
