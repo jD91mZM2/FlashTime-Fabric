@@ -46,11 +46,7 @@ public abstract class MinecraftClientMixin {
     @Shadow
     public GameRenderer gameRenderer;
     @Shadow
-    private boolean paused;
-    @Shadow
     public ClientWorld world;
-    @Shadow
-    private int itemUseCooldown;
     @Shadow
     public InGameHud inGameHud;
     @Shadow
@@ -58,40 +54,59 @@ public abstract class MinecraftClientMixin {
     @Shadow
     public ClientPlayerInteractionManager interactionManager;
     @Shadow
-    private float pausedTickDelta;
-    @Shadow
     public Screen currentScreen;
     @Shadow
     public ClientPlayerEntity player;
     @Shadow
-    protected int attackCooldown;
-    @Shadow
     public GameOptions options;
-
-    @Shadow
-    public Profiler getProfiler() { return null; }
-    @Shadow
-    public TutorialManager getTutorialManager() { return null; }
-    @Shadow
-    public TextureManager getTextureManager() { return null; }
-    @Shadow
-    public Overlay getOverlay() { return null; }
-    @Shadow
-    public void openScreen(Screen screen) {}
-    @Shadow
-    private void handleInputEvents() {}
     @Shadow
     public WorldRenderer worldRenderer;
+    @Shadow
+    public ParticleManager particleManager;
+    @Shadow
+    public Keyboard keyboard;
+    @Shadow
+    protected int attackCooldown;
+    @Shadow
+    private boolean paused;
+    @Shadow
+    private int itemUseCooldown;
+    @Shadow
+    private float pausedTickDelta;
     @Shadow
     private MusicTracker musicTracker;
     @Shadow
     private SoundManager soundManager;
     @Shadow
-    public ParticleManager particleManager;
-    @Shadow
     private ClientConnection clientConnection;
+
     @Shadow
-    public Keyboard keyboard;
+    public Profiler getProfiler() {
+        return null;
+    }
+
+    @Shadow
+    public TutorialManager getTutorialManager() {
+        return null;
+    }
+
+    @Shadow
+    public TextureManager getTextureManager() {
+        return null;
+    }
+
+    @Shadow
+    public Overlay getOverlay() {
+        return null;
+    }
+
+    @Shadow
+    public void openScreen(Screen screen) {
+    }
+
+    @Shadow
+    private void handleInputEvents() {
+    }
 
     // You can find all type names at https://asm.ow2.io/asm4-guide.pdf, under "Type descriptors". You're welcome.
     @Inject(method = "render", at = @At("RETURN"))
@@ -171,9 +186,11 @@ public abstract class MinecraftClientMixin {
         this.getProfiler().swap("gameRenderer");
 
         if (this.world != null) {
+            // MIXIN: Steal this from `tick`
             if (!this.paused) {
                 this.gameRenderer.tick();
             }
+            // MIXIN: Tick players separately
             world.tickEntity(this.player);
         }
     }
@@ -216,7 +233,7 @@ public abstract class MinecraftClientMixin {
                     CrashReport crashReport = CrashReport.create(var4, "Exception in world tick");
                     if (this.world == null) {
                         CrashReportSection crashReportSection = crashReport.addElement("Affected level");
-                        crashReportSection.add("Problem", (Object)"Level is null!");
+                        crashReportSection.add("Problem", (Object) "Level is null!");
                     } else {
                         this.world.addDetailsToCrashReport(crashReport);
                     }

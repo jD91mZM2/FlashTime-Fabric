@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "flashtime",
   "version": "${version}",
-
   "name": "FlashTime",
   "description": "A mod that makes everything slow... except the player",
   "authors": [
@@ -12,9 +11,7 @@
     "homepage": "https://jd91mzm2.github.io/",
     "sources": "https://github.com/jD91mZM2/FlashTime-Fabric"
   },
-
   "license": "MIT",
-
   "environment": "*",
   "entrypoints": {
     "main": [
