@@ -17,6 +17,7 @@ public abstract class RenderTickCounterMixin implements IRenderTickCounterAdditi
 
     /**
      * Updates the tick time similarly to how constructing a new RenderTickCounter with a different tick speed would.
+     *
      * @param tps The desired amount of ticks per second
      */
     @Override

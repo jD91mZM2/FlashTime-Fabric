@@ -9,7 +9,7 @@ class TickSpeed constructor(
 ) {
     private var _tps = tps
 
-    var tps : Float
+    var tps: Float
         get() = this._tps
         set(newTps) {
             this._tps = newTps;

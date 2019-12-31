@@ -15,8 +15,9 @@ public abstract class ClientWorldMixin {
     /**
      * Mixin that runs before tickEntity() and blocks all calls to ticking a player entity unless the invocation is
      * from the player's timer (which sets a certain flag)
+     *
      * @param entity The entity to update
-     * @param _info Callback info
+     * @param _info  Callback info
      */
     @Inject(method = "tickEntity", at = @At("HEAD"), cancellable = true)
     protected void onlyTickPlayerIfIAllowIt(Entity entity, CallbackInfo _info) {

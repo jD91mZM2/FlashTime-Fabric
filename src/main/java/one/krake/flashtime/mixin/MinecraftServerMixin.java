@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class MinecraftServerMixin {
     /**
      * Mixin that changes the server's hardcoded tick time. All "50L" constants are replaced with a dynamic one.
+     *
      * @param constant The constant to be inspected
      * @return The new constant
      */

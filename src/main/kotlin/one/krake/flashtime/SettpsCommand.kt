@@ -53,7 +53,7 @@ object SettpsCommand {
                 Target.Player -> FlashTimeState.playerTimer.tps = tps
                 Target.World -> FlashTimeState.worldTimer.tps = tps
             }
-        } catch (err : Exception) {
+        } catch (err: Exception) {
             err.printStackTrace();
             throw err;
         }
@@ -64,11 +64,13 @@ object SettpsCommand {
     private fun executeHot(source: ServerCommandSource): Int {
         FlashTimeState.superHot = true
         try {
-            source.player.networkHandler.sendPacket(TitleS2CPacket(
-                TitleS2CPacket.Action.TITLE,
-                TranslatableText("command.settickspeed.superhot.title")
-            ))
-        } catch (_err : CommandSyntaxException) {
+            source.player.networkHandler.sendPacket(
+                TitleS2CPacket(
+                    TitleS2CPacket.Action.TITLE,
+                    TranslatableText("command.settickspeed.superhot.title")
+                )
+            )
+        } catch (_err: CommandSyntaxException) {
             // This is just for effect, I don't want the command to fail if source isn't a player
             source.sendFeedback(TranslatableText("command.settickspeed.superhot.feedback"), false)
         }

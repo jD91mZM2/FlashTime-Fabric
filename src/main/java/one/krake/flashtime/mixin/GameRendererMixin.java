@@ -16,6 +16,7 @@ public abstract class GameRendererMixin {
     /**
      * Mixin that runs when renderWorld() tries to run camera.update(), and updates the tickDelta to that of the
      * player's timer, which causes smooth player movement.
+     *
      * @param _prevTickDelta The previous value
      * @return The new value
      */
@@ -31,6 +32,7 @@ public abstract class GameRendererMixin {
     /**
      * Mixin that runs when renderWorld() tries to run gameRenderer.bobView(), and updates the tickDelta to that of the
      * player's timer, which causes smooth view bobbing (whenever that option is on).
+     *
      * @param _prevTickDelta The previous value
      * @return The new value
      */
@@ -46,6 +48,7 @@ public abstract class GameRendererMixin {
     /**
      * Mixin that runs when renderWorld() tries to run gameRenderer.renderHand(), and updates the tickDelta to that of the
      * player's timer, which causes smooth hand rendering (otherwise it glitches quite a bit)
+     *
      * @param _prevTickDelta The previous value
      * @return The new value
      */

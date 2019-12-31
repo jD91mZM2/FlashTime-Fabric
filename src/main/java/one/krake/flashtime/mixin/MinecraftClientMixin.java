@@ -126,6 +126,7 @@ public abstract class MinecraftClientMixin {
 
     /**
      * Mixin that updates the world timer set in the constructor to one that can be updated.
+     *
      * @param _info Callback info
      */
     @Inject(method = "<init>*", at = @At("RETURN"))
@@ -135,7 +136,8 @@ public abstract class MinecraftClientMixin {
 
     /**
      * Mixin that runs after the render() function and handles ticking the player's timer.
-     * @param tick Whether or not this render is also a tick
+     *
+     * @param tick  Whether or not this render is also a tick
      * @param _info Callback info
      */
     @Inject(method = "render", at = @At("RETURN"))
