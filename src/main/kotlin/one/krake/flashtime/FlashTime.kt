@@ -22,6 +22,7 @@ class TickSpeed constructor(
 object FlashTimeState {
     var worldTimer = TickSpeed(2.0f)
     var playerTimer = TickSpeed(20.0f)
+    var superHot = false
     var lastTickDelta = 0.0
     var unlockPlayerTick = false
 }

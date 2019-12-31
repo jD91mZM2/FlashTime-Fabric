@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
+import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.options.GameOptions;
@@ -29,14 +30,20 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Difficulty;
 import one.krake.flashtime.FlashTimeState;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.stream.IntStream;
 
+// You can find all type names at https://asm.ow2.io/asm4-guide.pdf, under "Type descriptors". You're welcome.
+
 @Mixin(MinecraftClient.class)
+@SuppressWarnings("unused")
 public abstract class MinecraftClientMixin {
     private RenderTickCounter playerTickCounter = FlashTimeState.INSTANCE.getPlayerTimer().getTimer();
 
@@ -117,12 +124,20 @@ public abstract class MinecraftClientMixin {
     private void handleInputEvents() {
     }
 
+    /**
+     * Mixin that updates the world timer set in the constructor to one that can be updated.
+     * @param _info Callback info
+     */
     @Inject(method = "<init>*", at = @At("RETURN"))
     protected void onConstructed(CallbackInfo _info) {
         this.renderTickCounter = FlashTimeState.INSTANCE.getWorldTimer().getTimer();
     }
 
-    // You can find all type names at https://asm.ow2.io/asm4-guide.pdf, under "Type descriptors". You're welcome.
+    /**
+     * Mixin that runs after the render() function and handles ticking the player's timer.
+     * @param tick Whether or not this render is also a tick
+     * @param _info Callback info
+     */
     @Inject(method = "render", at = @At("RETURN"))
     protected void tickPlayerOnRender(boolean tick, CallbackInfo _info) {
         this.playerTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
@@ -133,11 +148,22 @@ public abstract class MinecraftClientMixin {
                         FlashTimeState.INSTANCE.setUnlockPlayerTick(true);
                         this.playerTick();
                         FlashTimeState.INSTANCE.setUnlockPlayerTick(false);
+
+                        if (FlashTimeState.INSTANCE.getSuperHot() && this.player != null && this.player.input != null) {
+                            Input input = this.player.input;
+                            if (input.pressingForward || input.pressingBack || input.pressingLeft || input.pressingRight) {
+                                FlashTimeState.INSTANCE.getWorldTimer().setTps(20);
+                            } else {
+                                FlashTimeState.INSTANCE.getWorldTimer().setTps(0.5F);
+                            }
+                        }
                     });
         }
     }
 
-    // Split out from tick function
+    /**
+     * The player parts of the tick function, split out from the regular tick function.
+     */
     public void playerTick() {
         if (this.itemUseCooldown > 0) {
             --this.itemUseCooldown;
@@ -209,9 +235,13 @@ public abstract class MinecraftClientMixin {
         }
     }
 
-    /***
-     This is an overwrite mainly because the function doesn't need to be modified so much as it needs to be split in two.
-     There also needs to be *some* special care to make sure everything is in the right half of the function.
+    /**
+     * The world's side of the tick function.
+     *
+     * @author jD91mZM2
+     * This is an overwrite mainly because the function doesn't need to be modified so much as it needs to be
+     * split in two. There also needs to be *some* special care to make sure everything is in the right half
+     * of the function.
      */
     @Overwrite
     public void tick() {
