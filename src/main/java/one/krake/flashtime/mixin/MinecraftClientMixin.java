@@ -29,9 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Difficulty;
 import one.krake.flashtime.FlashTimeState;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -40,14 +38,19 @@ import java.util.stream.IntStream;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
-    private final RenderTickCounter renderTickCounter = new RenderTickCounter(2.0F, 0L);
-    private final RenderTickCounter playerTickCounter = new RenderTickCounter(20.0F, 0L);
+    private RenderTickCounter playerTickCounter = FlashTimeState.INSTANCE.getPlayerTimer().getTimer();
 
     @Shadow
+    @Final
+    private RenderTickCounter renderTickCounter;
+
+    @Shadow
+    @Final
     public GameRenderer gameRenderer;
     @Shadow
     public ClientWorld world;
     @Shadow
+    @Final
     public InGameHud inGameHud;
     @Shadow
     public HitResult crosshairTarget;
@@ -58,12 +61,16 @@ public abstract class MinecraftClientMixin {
     @Shadow
     public ClientPlayerEntity player;
     @Shadow
+    @Final
     public GameOptions options;
     @Shadow
+    @Final
     public WorldRenderer worldRenderer;
     @Shadow
+    @Final
     public ParticleManager particleManager;
     @Shadow
+    @Final
     public Keyboard keyboard;
     @Shadow
     protected int attackCooldown;
@@ -74,8 +81,10 @@ public abstract class MinecraftClientMixin {
     @Shadow
     private float pausedTickDelta;
     @Shadow
+    @Final
     private MusicTracker musicTracker;
     @Shadow
+    @Final
     private SoundManager soundManager;
     @Shadow
     private ClientConnection clientConnection;
@@ -106,6 +115,11 @@ public abstract class MinecraftClientMixin {
 
     @Shadow
     private void handleInputEvents() {
+    }
+
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    protected void onConstructed(CallbackInfo _info) {
+        this.renderTickCounter = FlashTimeState.INSTANCE.getWorldTimer().getTimer();
     }
 
     // You can find all type names at https://asm.ow2.io/asm4-guide.pdf, under "Type descriptors". You're welcome.
@@ -195,8 +209,10 @@ public abstract class MinecraftClientMixin {
         }
     }
 
-    // This is an overwrite mainly because the function doesn't need to be modified so much as it needs to be split in two.
-    // There also needs to be *some* special care to make sure everything is in the right half of the function.
+    /***
+     This is an overwrite mainly because the function doesn't need to be modified so much as it needs to be split in two.
+     There also needs to be *some* special care to make sure everything is in the right half of the function.
+     */
     @Overwrite
     public void tick() {
         if (this.world != null) {

@@ -8,7 +8,8 @@
     "MinecraftServerMixin",
     "MinecraftClientMixin",
     "GameRendererMixin",
-    "ClientWorldMixin"
+    "ClientWorldMixin",
+    "RenderTickCounterMixin"
   ],
   "injectors": {
     "defaultRequire": 1

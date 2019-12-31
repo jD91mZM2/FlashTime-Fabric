@@ -13,7 +13,7 @@ public abstract class MinecraftServerMixin {
     @ModifyConstant(method = "run")
     public long onRun(long constant) {
         if (constant == 50) {
-            return 1000 / FlashTimeState.INSTANCE.getTicksPerSecond();
+            return (long) (1000 / FlashTimeState.INSTANCE.getWorldTimer().getTps());
         } else {
             return constant;
         }
