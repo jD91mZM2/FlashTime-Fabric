@@ -1,0 +1,20 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - stage1
+  - stage2
+
+build:
+  stage: stage1
+  image: java
+  cache:
+    paths:
+      - .gradle
+      - build
+  artifacts:
+    paths:
+      - build/libs/flashtime-1.0.0.jar
+  script:
+    - ./gradlew jar
+    - ./gradlew remapJar
