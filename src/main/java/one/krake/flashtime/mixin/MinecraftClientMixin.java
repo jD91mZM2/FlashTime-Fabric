@@ -94,7 +94,7 @@ public abstract class MinecraftClientMixin {
     @Final
     private SoundManager soundManager;
     @Shadow
-    private ClientConnection clientConnection;
+    private ClientConnection connection;
 
     @Shadow
     public Profiler getProfiler() {
@@ -142,10 +142,10 @@ public abstract class MinecraftClientMixin {
      */
     @Inject(method = "render", at = @At("RETURN"))
     protected void tickPlayerOnRender(boolean tick, CallbackInfo _info) {
-        this.playerTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
+        int ticksThisFrame = this.playerTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
         FlashTimeState.INSTANCE.setLastTickDelta(this.playerTickCounter.tickDelta);
         if (tick) {
-            IntStream.range(0, Math.min(10, this.playerTickCounter.ticksThisFrame))
+            IntStream.range(0, Math.min(10, ticksThisFrame))
                     .forEach(i -> {
                         FlashTimeState.INSTANCE.setUnlockPlayerTick(true);
                         this.playerTick();
@@ -301,9 +301,9 @@ public abstract class MinecraftClientMixin {
             if (!this.paused) {
                 this.particleManager.tick();
             }
-        } else if (this.clientConnection != null) {
+        } else if (this.connection != null) {
             this.getProfiler().swap("pendingConnection");
-            this.clientConnection.tick();
+            this.connection.tick();
         }
 
         this.getProfiler().swap("keyboard");

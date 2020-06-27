@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.FloatArgumentType
 import com.mojang.brigadier.arguments.FloatArgumentType.floatArg
 import com.mojang.brigadier.exceptions.CommandSyntaxException
-import net.minecraft.client.network.packet.TitleS2CPacket
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.TranslatableText

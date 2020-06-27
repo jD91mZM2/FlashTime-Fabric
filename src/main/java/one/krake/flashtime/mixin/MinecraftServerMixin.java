@@ -16,7 +16,7 @@ public abstract class MinecraftServerMixin {
      * @param constant The constant to be inspected
      * @return The new constant
      */
-    @ModifyConstant(method = "run")
+    @ModifyConstant(method = "method_29741")
     public long onRun(long constant) {
         if (constant == 50) {
             return (long) (1000 / FlashTimeState.INSTANCE.getWorldTimer().getTps());

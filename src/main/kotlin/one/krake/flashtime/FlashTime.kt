@@ -1,6 +1,7 @@
 package one.krake.flashtime
 
 import net.fabricmc.api.ModInitializer
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback
 import net.fabricmc.fabric.api.registry.CommandRegistry
 import net.minecraft.client.render.RenderTickCounter
 
@@ -29,9 +30,9 @@ object FlashTimeState {
 
 class FlashTime : ModInitializer {
     override fun onInitialize() {
-        CommandRegistry.INSTANCE.register(false) { dispatcher ->
+        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _ ->
             SettpsCommand.register(dispatcher)
-        }
+        })
     }
 }
 
